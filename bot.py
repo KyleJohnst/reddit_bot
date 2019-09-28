@@ -19,7 +19,7 @@ values = []
 for keyword in open('keywords.txt'):
     values.append(keyword.strip('\n'))
 
-for submission in reddit.subreddit('KyleDevEnv').new(limit=25):
+for submission in reddit.subreddit('KyleDevEnv').stream.submissions():
     print(submission.title)
 
     if any(word in submission.title.lower() or word in submission.selftext.lower() for word in values):
