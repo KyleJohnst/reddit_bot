@@ -1,0 +1,16 @@
+medical
+surgery
+doctor
+ear
+pain
+bends
+illness
+hurt
+sick
+ruptured
+infections
+lung
+heart
+tingling
+numbness
+rash
