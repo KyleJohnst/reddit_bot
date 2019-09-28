@@ -2,7 +2,11 @@ import praw
 import os
 import re
 
-reddit = praw.Reddit('bot1')
+reddit = praw.Reddit(username = os.environ["username"],
+                password = os.environ["password"],
+                client_id = os.environ["client_id"],
+                client_secret = os.environ["client_secret"],
+                user_agent = os.environ["user_agent"])
 
 # Create a list
 if not os.path.isfile("posts_replied_to.txt"):
@@ -19,7 +23,7 @@ values = []
 for keyword in open('keywords.txt'):
     values.append(keyword.strip('\n'))
 
-for submission in reddit.subreddit('KyleDevEnv').new(limit=25):
+for submission in reddit.subreddit('KyleDevEnv').stream.submissions():
     print(submission.title)
 
     if any(word in submission.title.lower() or word in submission.selftext.lower() for word in values):
