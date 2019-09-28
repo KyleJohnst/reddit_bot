@@ -25,7 +25,7 @@ for submission in reddit.subreddit('KyleDevEnv').new(limit=25):
     if any(word in submission.title.lower() or word in submission.selftext.lower() for word in values):
         if submission.id not in posts_replied_to:
                 # Reply
-                submission.reply("If you have any medical concerns in regards to diving, you should contact [DAN](https://www.diversalertnetwork.org/) for medical advice. The opinions here should not superceed that of a trained medical practioner.")
+                submission.reply("If you have any medical concerns in regards to diving, you should contact [DAN](https://www.diversalertnetwork.org/) for medical advice. The opinions here should not superceed that of a trained medical practioner." + "\n\n\n\n---\n\n^(Beep boop. I am a bot. If there are any issues, contact my) [^Master ](https://www.reddit.com/message/compose/?to=Aer0za&subject=/u/DiveBotto)\n\n^(Check out my ) [^GitHub ](https://github.com/KyleJohnst/reddit_bot)")
                 print("Bot replying to : ", submission.title)
 
                 # Store id in response list
