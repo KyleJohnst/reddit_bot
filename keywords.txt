@@ -1,7 +1,6 @@
 medical
 surgery
 doctor
-ear
 pain
 bends
 illness
