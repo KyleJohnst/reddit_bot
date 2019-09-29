@@ -14,3 +14,4 @@ heart
 tingling
 numbness
 rash
+pneumothorax
