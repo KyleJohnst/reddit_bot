@@ -2,7 +2,11 @@ import praw
 import os
 import re
 
-reddit = praw.Reddit('bot1')
+reddit = praw.Reddit(username = os.environ["username"],
+                password = os.environ["password"],
+                client_id = os.environ["client_id"],
+                client_secret = os.environ["client_secret"],
+                user_agent = os.environ["user_agent"])
 
 # Create a list
 if not os.path.isfile("posts_replied_to.txt"):
