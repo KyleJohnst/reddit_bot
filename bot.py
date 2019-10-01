@@ -22,7 +22,7 @@ for keyword in open('keywords.txt'):
 
 try:
    # Monitor new posts stream  
-   for submission in reddit.subreddit('scuba').stream.submissions():
+   for submission in reddit.subreddit('KyleDevEnv').stream.submissions():
         print(submission.title)
 
         # Break up the data in the submission to allow more accurate verification
