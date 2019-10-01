@@ -27,7 +27,7 @@ TimeLim = currentDT - 43200.00 # 12 Hour limit
 
 try:
     # Monitor new posts stream
-    for submission in reddit.subreddit('KyleDevEnv').stream.submissions():
+    for submission in reddit.subreddit('scuba').stream.submissions():
         print(submission.title)
 
         # Ensure bot only responds to posts from last 12 hours
