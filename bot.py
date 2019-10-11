@@ -26,7 +26,7 @@ TimeLim = currentDT - 3600.00 # 1 Hour limit
 
 try:
     # Monitor new posts stream
-    for submission in reddit.subreddit(os.environ["scuba"]).stream.submissions():
+    for submission in reddit.subreddit(os.environ["subreddit"]).stream.submissions():
         print(submission.title)
 
         # Ensure bot only responds to posts from last 12 hours
