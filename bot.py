@@ -2,7 +2,6 @@ import praw
 import os
 import re
 import bot_login
-import datetime
 import time
 
 reddit = bot_login.bot_login()
@@ -23,11 +22,11 @@ for keyword in open('keywords.txt'):
     values.append(keyword.strip('\n'))
 
 currentDT = time.time()
-TimeLim = currentDT - 43200.00 # 12 Hour limit
+TimeLim = currentDT - 3600.00 # 1 Hour limit
 
 try:
     # Monitor new posts stream
-    for submission in reddit.subreddit('scuba').stream.submissions():
+    for submission in reddit.subreddit(os.environ["subreddit"]).stream.submissions():
         print(submission.title)
 
         # Ensure bot only responds to posts from last 12 hours
