@@ -22,15 +22,19 @@ for keyword in open('keywords.txt'):
     values.append(keyword.strip('\n'))
 
 currentDT = time.time()
-TimeLim = currentDT - 3600.00 # 1 Hour limit
+TimeLim = currentDT - 300.00 # 5 min limit to respond to posts/comments
 
+#Formula for working out EANx percentage for given depth.
+# # PO2/P = FO2
 def eanxCalc(param):
     try:
         measurement = param[-1]
+        # Calculation for meters
         if measurement == 'm':
             x = 1.4/(int(param[0])/10+1)
             eanx = x * 100
             return int(eanx)
+        # Calculation for feet
         elif measurement == 'ft':
             conv = int(param[0])/3.2808
             x = 1.4/(conv/10+1)
@@ -39,14 +43,28 @@ def eanxCalc(param):
     except Exception as exc:
         print("Failed nitrox percentage calculation with exc: ", exc)
 
+# Formula for working out max depth for given EANx percentage
+# PO2/FO2 = P
+def depthCalc(param):
+    try:
+        d = 1.4/(float(param[0])/100.0)
+        depth = (d - 1) * 10
+        measurement = param[-1]
+        #Convert from meters to feet or just returns meters
+        if measurement == 'ft':           
+            return int(depth*3.2808)
+        else:
+            return int(depth)
+    except Exception as exc:
+        print("Failed depth calculation with exc: ", exc)
 
+#Tag for standard bot responses
 botTag = "\n\n\n\n---\n\n^(Beep boop. I am a baby bot and still make mistakes . If there are any issues, contact my) [^Master ](https://www.reddit.com/message/compose/?to=Aer0za&subject=/u/DiveBotto)\n\n^(Check out my ) [^GitHub ](https://github.com/KyleJohnst/reddit_bot)"
 
+# Monitor new posts stream for medical questions
 try:
-    # Monitor new posts stream
-    for submission in reddit.subreddit(os.environ["KyleDevEnv"]).stream.submissions():
+    for submission in reddit.subreddit(os.environ["subreddit"]).stream.submissions():
         print(submission.title)
-
         # Ensure bot only responds to posts from last 12 hours
         if submission.created_utc > TimeLim:
             # Break up the data in the submission to allow more accurate verification
@@ -64,22 +82,45 @@ try:
 except Exception as exc:
     print("Process failed to respond to new submissions with exc: ", exc)
 
+# Methods to monitor for EANx(Nitrox) calculation requests
 try:
-    for comment in reddit.subreddit('KyleDevEnv').stream.comments():
+    for comment in reddit.subreddit(os.environ["subreddit"]).stream.comments():
             if comment.created_utc > TimeLim:
                 context = comment.body.lower().split(' ')
                 for keyword in context:
+                    # Monitors for requests for EANx percentage requests
                     if keyword == 'nitrox%':
+                        # Gets the parameters from the request
                         parameter = context.pop(1)
+                        # Separates params into the variables needed
                         params = parameter.split('/')
+                        #Get calculations
                         eanx = str(eanxCalc(params))
+                        # Reply if calc passes or educate requester on needed format.
                         if eanx != 'None':
-                            comment.reply("Hello, the maximum O^2 percentage for your dive to a maximum depth of" + params[0] + params[-1] + ", would be " + eanx + "%. Rounded down for conservatism with a PO^2 of 1.4" + "\n\n\n This is just a guidline and should not replace your own calculations" + botTag)
-                            print("Replying with max O2 percentage to: ", comment.body)
+                            comment.reply("Hello, the maximum O^2 EANx percentage for your dive to a maximum depth of " + params[0] + params[-1] + ", would be " + eanx + "%. Rounded down for conservatism with a PO^2 of 1.4Bar" + "\n\n\n This is just a guideline and should not replace your own calculations and training" + botTag)
+                            print("Replying with max O2 percentage to: ", comment.body)                           
                         else:
                             comment.reply("Hello, you will need to specify wether I need to work from feet or meters, please call again using the format of max_depth/ft or max_depth/m" + botTag)
                             print("Educating person: ", comment.body)
-
+                    
+                    # Monitors for max depth on percentage requests
+                    if keyword == 'nitroxdepth':
+                        # Gets the parameters from the request
+                        parameter = context.pop(1)
+                        # Separates params into the variables needed
+                        params = parameter.split('/')
+                        # Get calculations
+                        depth = str(depthCalc(params))
+                        # Reply if calc passes or educate requester on needed format.
+                        if depth != 'None':
+                            comment.reply("Hello, the maximum depth you could dive to on " + params[0] + "%" + " EANx would be " + depth + params[-1]+ ". Rounded down for conservatism and assuming a PO^2 of 1.4Bar" + "\n\n\n These responses should just be used as a guideline and not replace your own calculations and training" + botTag)
+                            print("Replying with max depth to: ", comment.body)
+                            posts_replied_to.append(comment.id)
+                        else:
+                            comment.reply("Hello, you will need to specify wether I need to work in feet or meters, please call again using the format of EANx/ft or EANx/m ie: 32/ft" + botTag)
+                            print("Educating person: ", comment.body)
+                            posts_replied_to.append(comment.id)
 except Exception as exc:
     print("Process failed with exc: ", exc)
 
